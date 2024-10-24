@@ -5,51 +5,39 @@
 #include "Example/SPigeon.h"
 #include "Example/SEagle.h"
 #include "Example/SFlyable.h"
+#include "JsonObjectConverter.h"
+#include "UObject/SavePackage.h"
 
 USGameInstance::USGameInstance()
 {
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void USGameInstance::Init()
 {
 	Super::Init();
 
-	USPigeon* Pigeon1 = NewObject<USPigeon>();
-	if (IsValid(Pigeon1) == true)
-	{
-		Pigeon1->Fly();
-	}
+	SpawnedPigeon = NewObject<USPigeon>();
+	SpawnedPigeon->SetPigeonName(TEXT("SpawnedPigeon"));
+	SpawnedPigeon->SetPigeonID(7);
 
-	USEagle* Eagle1 = NewObject<USEagle>();
-	if (IsValid(Eagle1) == true)
+	if (SpawnedPigeon->OnPigeonFlying.IsAlreadyBound(this, &ThisClass::HandlePigeonFlying) == false)
 	{
-		Eagle1->Fly();
+		SpawnedPigeon->OnPigeonFlying.AddDynamic(this, &ThisClass::HandlePigeonFlying);
 	}
-
-	TArray<ISFlyable*> Birds;
-	Birds.Reserve(10);
-
-	if (Pigeon1->GetClass()->ImplementsInterface(USFlyable::StaticClass()) == true)
-	{
-		ISFlyable* Bird1 = Cast<ISFlyable>(Pigeon1);
-		Birds.Emplace(Bird1);
-	}
-
-	if (Eagle1->GetClass()->ImplementsInterface(USFlyable::StaticClass()) == true)
-	{
-		ISFlyable* Bird2 = Cast<ISFlyable>(Eagle1);
-		Birds.Emplace(Bird2);
-	}
-
-	for (auto Bird : Birds)
-	{
-		Bird->Fly();
-	}
+	SpawnedPigeon->Fly();
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void USGameInstance::Shutdown()
 {
 	Super::Shutdown();
+
+	if (true == SpawnedPigeon->OnPigeonFlying.IsAlreadyBound(this, &ThisClass::HandlePigeonFlying))
+	{
+		SpawnedPigeon->OnPigeonFlying.RemoveDynamic(this, &ThisClass::HandlePigeonFlying);
+	}
+}
+
+void USGameInstance::HandlePigeonFlying(const FString& InName, const int32 InID)
+{
+	UE_LOG(LogTemp, Log, TEXT("[%d] %s is now flying."), InID, *InName);
 }
