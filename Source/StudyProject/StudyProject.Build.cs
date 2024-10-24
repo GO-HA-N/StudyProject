@@ -8,7 +8,14 @@ public class StudyProject : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] 
+		{ 
+			// Init
+			"Core", "CoreUObject", "Engine", "InputCore" ,
+
+			// Json Modules
+			"Json", "JsonUtilities",
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

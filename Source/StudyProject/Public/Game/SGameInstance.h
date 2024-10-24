@@ -21,8 +21,14 @@ public:
 
 	virtual void Shutdown() override;
 
+	UFUNCTION()
+	void HandlePigeonFlying(const FString& InName, const int32 InID);
+
 protected:
 	UPROPERTY()
 	FString Name;
+
+	UPROPERTY()
+	TObjectPtr<class USPigeon> SpawnedPigeon;
 
 };
